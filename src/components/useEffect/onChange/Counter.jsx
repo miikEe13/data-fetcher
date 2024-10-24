@@ -1,50 +1,8 @@
-import { useState, useEffect } from 'react';
 import '../../../assets/components/counter.css';  // Asegúrate de agregar un archivo CSS para estilos básicos
+import { useCounter } from '../../../hooks/useCounter';  // Importamos el hook personalizado 
 
 export const Counter = () => {
-    const [count, setCount] = useState(0);  // Estado del contador
-    const [specialMessage, setSpecialMessage] = useState('');  // Mensaje especial que se mostrará
-    const [limit, setLimit] = useState(0);  // Límite de incremento
-    const [wasReset, setWasReset] = useState(false);  // Estado para saber si se reinició el contador
-
-    // useEffect que depende de 'count' y 'limit'. Se ejecuta cada vez que 'count' cambia
-    useEffect(() => {
-        if(limit === 0) {
-            setSpecialMessage('Ingresa un límite mayor a 0');
-        } else if (wasReset && count !== 0) {
-            // Cuando el contador empieza a incrementarse después del reinicio, limpiamos el mensaje de reinicio
-            setSpecialMessage('');
-            setWasReset(false);
-        } else if (wasReset) {
-            setSpecialMessage('Reiniciamos el contador :D');
-        } else if (count % 5 === 0 && count !== 0 && count < limit) {
-            setSpecialMessage('¡Es un múltiplo de 5!');
-        } else if (count === limit) {
-            setSpecialMessage('¡Límite alcanzado!, establece un nuevo límite');
-        } else {
-            setSpecialMessage('');
-        }
-    }, [count, limit, wasReset]);  // Se ejecuta cuando 'count' o 'limit' cambian
-
-    // Función para incrementar el contador
-    const handleIncrement = () => {
-        if (count < limit) {  // Solo incrementamos si 'count' es menor que el límite
-            setCount(prevCount => prevCount + 1);
-        }
-    };
-
-    // Función para cambiar el límite dinámicamente
-    const handleLimitChange = (e) => {
-        const newLimit = parseInt(e.target.value);
-        setLimit(newLimit);  // Actualizamos el valor del límite
-
-        // Si el contador ya había alcanzado o superado el límite, reiniciamos el contador
-        if (count >= newLimit) {
-            setCount(0);  // Reiniciamos el contador a 0 si el nuevo límite es menor que el contador actual
-            setWasReset(true);  // Activamos el estado de reinicio
-            console.log('specialMessage', specialMessage);
-        }
-    };
+    const { count, limit, specialMessage, handleLimitChange, increment, decrement } = useCounter(0);  // Usamos el hook personalizado
 
     return (
         <div className="counter-container">
@@ -57,18 +15,25 @@ export const Counter = () => {
                     <input 
                         type="number" 
                         value={limit} 
-                        onChange={handleLimitChange} 
+                        onChange={(e) => handleLimitChange(parseInt(e.target.value))}
                         min="1"
                         max="100"
                     />
                 </label>
             </div>
-
+            <div className='mt-4'>
+                <button onClick={increment} disabled={count >= limit}>
+                    Incrementar
+                </button>
+                <button onClick={decrement} className='ms-4 decrement btn btn-secondary' disabled={count <= 0}>
+                    Decrementar
+                </button>
+            </div>
             {/* Botón de incrementar */}
-            <button onClick={handleIncrement} disabled={count >= limit}>Incrementar</button>
 
             {/* Mostramos el mensaje especial si existe */}
-            {specialMessage && <p className="special-message">{specialMessage}</p>}
+            {specialMessage && <p role="alert" className="mt-4 special-message alert alert-danger">{specialMessage}</p>}
         </div>
     );
 };
+
