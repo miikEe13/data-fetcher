@@ -23,6 +23,11 @@
     text-align: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    @media screen and (max-width: 768px) {
+        width: 100%;
+    }
 }
 
 .user-card:hover {
@@ -41,4 +46,9 @@ p {
 
 strong {
     color: #000;
+}
+
+.user-card a {
+    margin-top: auto !important;
+    align-self: center;
 }
